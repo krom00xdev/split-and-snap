@@ -1,23 +1,17 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="manifest" href="./manifest.json">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Split & Snap - Receipt & Expense Splitter</title>
+    <meta name="description" content="Quickly split bills, calculate tips, and share receipts with ease. 100% local & private.">
+    <meta name="theme-color" content="#0f172a">
     
-    <!-- PWA Primary Meta Tags -->
-    <meta name="theme-color" content="#4f46e5">
-    <meta name="description" content="Quick Receipt & Expense Splitter & Tip Calculator">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Split&Snap">
+    <!-- PWA Web App Manifest (Data URI for single file deployment) -->
+    <link rel="manifest" href="data:application/json;charset=utf-8,%7B%22short_name%22%3A%22Split%26Snap%22%2C%22name%22%3A%22Split%20%26%20Snap%20-%20Receipt%20%26%20Expense%20Splitter%22%2C%22description%22%3A%22Quickly%20calculate%20tips%2C%20split%20bills%2C%20and%20share%20expense%20summaries.%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fcdn-icons-png.flaticon.com%2F512%2F2489%2F2489756.png%22%2C%22type%22%3A%22image%2Fpng%22%2C%22sizes%22%3A%22512x512%22%7D%5D%2C%22start_url%22%3A%22index.html%22%2C%22background_color%22%3A%22%230f172a%22%2C%22theme_color%22%3A%22%230f172a%22%2C%22display%22%3A%22standalone%22%7D">
+    <link rel="manifest" href="./manifest.json">
 
-    <!-- Inline Web App Manifest Data URI -->
-    <link rel="manifest" href="data:application/manifest+json;utf8,%7B%22name%22%3A%22Split%20%26%20Snap%22%2C%22short_name%22%3A%22Split%21%22%2C%22description%22%3A%22Quick%20Receipt%20%26%20Expense%20Splitter%20%26%20Tip%20Calculator%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f172a%22%2C%22theme_color%22%3A%22%234f46e5%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%3Cutf8%2C%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20512%20512%27%3E%3Crect%20width%3D%27512%27%20height%3D%27512%27%20rx%3D%27100%27%20fill%3D%27%234f46e5%27%2F%3E%3Cpath%20d%3D%27M160%20160h192v32H160zm0%2064h192v32H160zm0%2064h120v32H160z%27%20fill%3D%27%23ffffff%27%2F%3E%3Ccircle%20cx%3D%27360%27%20cy%3D%27350%27%20r%3D%2740%27%20fill%3D%27%2310b981%27%2F%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
-
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -26,922 +20,694 @@
                 extend: {
                     colors: {
                         brand: {
-                            50: '#eef2ff',
-                            100: '#e0e7ff',
-                            500: '#6366f1',
-                            600: '#4f46e5',
-                            700: '#4338ca',
+                            50: '#f0fdf4',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
                         }
                     }
                 }
             }
         }
     </script>
-    
-    <!-- Font Awesome Icons -->
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <style>
-        /* Glassmorphism Styling */
-        .glass {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        .dark .glass {
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        
-        /* Smooth Pulse Animation for Disabled Action Visual Cue */
-        @keyframes subtle-pulse {
-            0%, 100% { opacity: 0.9; }
-            50% { opacity: 0.5; }
-        }
-        .pulse-warning {
-            animation: subtle-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-    </style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-full font-sans transition-colors duration-200">
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between font-sans antialiased selection:bg-brand-500 selection:text-white pb-10">
 
-    <!-- Toast Notification Container -->
-    <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 transform -translate-y-20 opacity-0 transition-all duration-300 ease-out bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-3 rounded-full shadow-2xl flex items-center space-x-3 pointer-events-none">
-        <i id="toast-icon" class="fas fa-check-circle text-emerald-400 dark:text-emerald-600"></i>
-        <span id="toast-message" class="text-sm font-medium">Notification message</span>
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-brand-600 text-white px-6 py-3 rounded-full shadow-2xl flex items-center space-x-3 transition-all duration-300 opacity-0 pointer-events-none translate-y-[-20px]">
+        <i class="fa-solid fa-circle-check text-xl"></i>
+        <span id="toast-msg" class="font-medium text-sm">Action completed!</span>
     </div>
 
-    <!-- Main Container -->
-    <div class="max-w-2xl mx-auto px-4 py-6 sm:px-6">
-
-        <!-- Top Header & Controls -->
-        <header class="flex justify-between items-center mb-6">
+    <!-- Header Navigation -->
+    <header class="w-full bg-slate-800/80 backdrop-blur-md border-b border-slate-700/60 sticky top-0 z-40">
+        <div class="max-w-xl mx-auto px-4 py-3 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-2xl bg-brand-600 flex items-center justify-center text-white shadow-lg shadow-brand-500/30">
-                    <i class="fas fa-receipt text-lg"></i>
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center shadow-lg shadow-brand-500/20">
+                    <i class="fa-solid fa-receipt text-white text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold tracking-tight">Split & Snap</h1>
-                    <p class="text-xs text-slate-500 dark:text-slate-400" data-i18n="tagline">Smart Expense Splitter</p>
+                    <h1 class="font-bold text-lg leading-tight tracking-wide text-white">Split & Snap</h1>
+                    <p class="text-xs text-slate-400" id="ui-subtitle">Easy Receipt & Expense Splitter</p>
                 </div>
             </div>
 
-            <!-- Controls: Theme & Language -->
+            <!-- Language Switcher Selector -->
             <div class="flex items-center space-x-2">
-                <!-- Theme Toggle -->
-                <button id="theme-toggle" class="p-2.5 rounded-xl bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 shadow-sm border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
-                    <i class="fas fa-moon dark:hidden"></i>
-                    <i class="fas fa-sun hidden dark:block text-amber-400"></i>
-                </button>
-
-                <!-- Language Selector -->
                 <div class="relative">
-                    <select id="lang-select" class="appearance-none bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold pl-3 pr-8 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer">
-                        <option value="en">🇺🇸 EN</option>
+                    <select id="lang-select" onchange="changeLanguage(this.value)" class="bg-slate-700/80 hover:bg-slate-700 text-slate-200 text-xs font-semibold py-1.5 px-3 pr-8 rounded-lg border border-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer appearance-none transition">
+                        <option value="en">🇬🇧 EN</option>
                         <option value="el">🇬🇷 EL</option>
                         <option value="de">🇩🇪 DE</option>
                         <option value="fr">🇫🇷 FR</option>
                     </select>
-                    <i class="fas fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 pointer-events-none"></i>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
+                        <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                    </div>
                 </div>
+                <button onclick="openModal('history-modal')" class="p-2 text-slate-400 hover:text-slate-200 transition" title="History">
+                    <i class="fa-solid fa-clock-rotate-left text-lg"></i>
+                </button>
             </div>
-        </header>
+        </div>
+    </header>
 
-        <!-- Main Card -->
-        <main class="glass rounded-3xl p-5 sm:p-7 shadow-xl mb-6">
+    <!-- Main Container -->
+    <main class="max-w-xl mx-auto w-full px-4 pt-6 flex-1 space-y-6">
+
+        <!-- Split Mode Selector -->
+        <div class="bg-slate-800/60 p-1.5 rounded-2xl border border-slate-700/60 flex space-x-1 shadow-inner">
+            <button id="tab-equal" onclick="setMode('equal')" class="flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold transition-all duration-200 bg-brand-600 text-white shadow-md flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-users"></i>
+                <span id="ui-tab-equal">Equal Split</span>
+            </button>
+            <button id="tab-itemized" onclick="setMode('itemized')" class="flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-slate-200 flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-list-check"></i>
+                <span id="ui-tab-itemized">Itemized / Custom</span>
+            </button>
+        </div>
+
+        <!-- Bill Calculation Form -->
+        <div class="bg-slate-800/80 backdrop-blur-md border border-slate-700/60 rounded-2xl p-5 shadow-xl space-y-5">
             
-            <!-- Mode Switcher Tabs -->
-            <div class="grid grid-cols-2 gap-1.5 p-1.5 bg-slate-200/60 dark:bg-slate-800/80 rounded-2xl mb-6">
-                <button id="tab-equal" onclick="switchMode('equal')" class="py-2.5 text-xs sm:text-sm font-semibold rounded-xl transition duration-200 bg-white dark:bg-slate-700 text-brand-600 dark:text-white shadow-sm flex items-center justify-center space-x-2">
-                    <i class="fas fa-users text-sm"></i>
-                    <span data-i18n="tabEqual">Equal Split</span>
-                </button>
-                <button id="tab-itemized" onclick="switchMode('itemized')" class="py-2.5 text-xs sm:text-sm font-semibold rounded-xl transition duration-200 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center justify-center space-x-2">
-                    <i class="fas fa-list-check text-sm"></i>
-                    <span data-i18n="tabItemized">Itemized Split</span>
-                </button>
+            <!-- Bill Amount -->
+            <div>
+                <label id="ui-lbl-total" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Total Bill Amount</label>
+                <div class="relative rounded-xl shadow-sm">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 font-bold text-xl">€</div>
+                    <input type="number" id="total-amount" placeholder="0.00" step="0.01" oninput="calculate()" class="block w-full rounded-xl bg-slate-900/90 border border-slate-700 py-3.5 pl-10 pr-4 text-2xl font-bold text-white placeholder-slate-600 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition">
+                </div>
             </div>
 
-            <!-- MODE 1: EQUAL SPLIT ENGINE -->
-            <div id="engine-equal" class="space-y-5">
-                <!-- Bill Amount Input -->
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2" data-i18n="billTotal">Bill Total</label>
-                    <div class="relative">
-                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg font-bold">€</span>
-                        <input type="number" id="eq-bill" step="0.01" min="0" placeholder="0.00" oninput="calculateEqual()" class="w-full bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/80 rounded-2xl py-3.5 pl-10 pr-4 text-xl font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
-                    </div>
+            <!-- Tip Selector -->
+            <div>
+                <label id="ui-lbl-tip" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Tip Percentage</label>
+                <div class="grid grid-cols-5 gap-2">
+                    <button type="button" onclick="setTip(0)" class="tip-btn py-2 rounded-xl text-xs font-bold border border-slate-700 bg-slate-900/60 hover:border-brand-500 transition">0%</button>
+                    <button type="button" onclick="setTip(5)" class="tip-btn py-2 rounded-xl text-xs font-bold border border-slate-700 bg-slate-900/60 hover:border-brand-500 transition">5%</button>
+                    <button type="button" onclick="setTip(10)" class="tip-btn py-2 rounded-xl text-xs font-bold border border-slate-700 bg-slate-900/60 hover:border-brand-500 transition border-brand-500 text-brand-500 bg-brand-500/10">10%</button>
+                    <button type="button" onclick="setTip(15)" class="tip-btn py-2 rounded-xl text-xs font-bold border border-slate-700 bg-slate-900/60 hover:border-brand-500 transition">15%</button>
+                    <input type="number" id="custom-tip" placeholder="Custom" oninput="setCustomTip(this.value)" class="py-2 px-1 text-center rounded-xl text-xs font-bold bg-slate-900/90 border border-slate-700 text-white focus:border-brand-500 focus:outline-none">
                 </div>
+            </div>
 
-                <!-- Tip Selector -->
+            <!-- EQUAL SPLIT CONTROLS -->
+            <div id="equal-controls" class="space-y-4 pt-2">
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2" data-i18n="tipSelection">Tip Percentage</label>
-                    <div class="grid grid-cols-5 gap-2">
-                        <button onclick="setTip(0)" class="tip-btn py-2.5 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-brand-500 transition">0%</button>
-                        <button onclick="setTip(5)" class="tip-btn py-2.5 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-brand-500 transition">5%</button>
-                        <button onclick="setTip(10)" class="tip-btn py-2.5 text-xs font-bold rounded-xl border border-brand-500 bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 transition">10%</button>
-                        <button onclick="setTip(15)" class="tip-btn py-2.5 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-brand-500 transition">15%</button>
-                        <input type="number" id="eq-custom-tip" min="0" max="100" placeholder="Custom" oninput="setCustomTip()" class="w-full text-center text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                    </div>
-                </div>
-
-                <!-- People Counter -->
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2" data-i18n="numberOfPeople">Number of People</label>
-                    <div class="flex items-center justify-between bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/80 rounded-2xl p-2">
-                        <button onclick="changePeople(-1)" class="w-11 h-11 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center font-bold text-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition active:scale-95">
-                            <i class="fas fa-minus"></i>
-                        </button>
-                        <span id="eq-people-count" class="text-xl font-bold">2</span>
-                        <button onclick="changePeople(1)" class="w-11 h-11 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center font-bold text-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition active:scale-95">
-                            <i class="fas fa-plus"></i>
-                        </button>
+                    <label id="ui-lbl-people" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Number of People</label>
+                    <div class="flex items-center space-x-3">
+                        <button type="button" onclick="adjustPeople(-1)" class="w-12 h-12 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-bold text-xl flex items-center justify-center transition active:scale-95">-</button>
+                        <input type="number" id="people-count" value="2" min="1" oninput="calculate()" class="block w-full text-center rounded-xl bg-slate-900/90 border border-slate-700 py-3 text-xl font-bold text-white focus:border-brand-500 focus:outline-none">
+                        <button type="button" onclick="adjustPeople(1)" class="w-12 h-12 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-bold text-xl flex items-center justify-center transition active:scale-95">+</button>
                     </div>
                 </div>
             </div>
 
-            <!-- MODE 2: ITEMIZED SPLIT ENGINE -->
-            <div id="engine-itemized" class="space-y-5 hidden">
-                <!-- Add New Item Form -->
-                <div class="bg-slate-50 dark:bg-slate-800/50 p-3.5 rounded-2xl border border-slate-200/80 dark:border-slate-700/50 space-y-3">
-                    <div class="grid grid-cols-12 gap-2">
-                        <input type="text" id="itm-name" placeholder="Item Name (e.g. Pizza)" class="col-span-7 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" data-i18n-placeholder="itemPlaceholder">
-                        <input type="number" id="itm-price" step="0.01" min="0" placeholder="Price (€)" class="col-span-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" data-i18n-placeholder="pricePlaceholder">
-                    </div>
-                    <div class="grid grid-cols-12 gap-2">
-                        <input type="text" id="itm-assigned" placeholder="Assigned to (e.g. Alex, Maria)" class="col-span-9 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" data-i18n-placeholder="assignedPlaceholder">
-                        <button onclick="addItem()" class="col-span-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs rounded-xl flex items-center justify-center space-x-1 transition active:scale-95">
-                            <i class="fas fa-plus"></i>
-                            <span data-i18n="addBtn">Add</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Tip Percentage for Itemized -->
+            <!-- ITEMIZED SPLIT CONTROLS -->
+            <div id="itemized-controls" class="space-y-4 pt-2 hidden">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400" data-i18n="tipSelection">Tip Percentage</span>
-                    <div class="flex items-center space-x-2">
-                        <input type="number" id="itm-tip-pct" value="10" min="0" max="100" oninput="calculateItemized()" class="w-16 text-center text-sm font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-1 focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                        <span class="text-sm font-bold">%</span>
-                    </div>
+                    <label id="ui-lbl-items" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Items / Extra Expenses</label>
+                    <button type="button" onclick="addItemRow()" class="text-xs font-semibold text-brand-500 hover:text-brand-400 flex items-center space-x-1">
+                        <i class="fa-solid fa-plus"></i> <span id="ui-btn-additem">Add Person/Item</span>
+                    </button>
                 </div>
-
-                <!-- Items List -->
-                <div class="space-y-2 max-h-52 overflow-y-auto pr-1" id="items-list-container">
-                    <!-- Dynamic Items render here -->
+                <div id="item-rows" class="space-y-2">
+                    <!-- Dynamic Rows Insertion -->
                 </div>
             </div>
 
-            <!-- SUMMARY BREAKDOWN BOX -->
-            <div class="mt-6 pt-5 border-t border-slate-200 dark:border-slate-700/80">
-                <div class="bg-gradient-to-br from-brand-500 to-indigo-700 rounded-2xl p-5 text-white shadow-lg space-y-3">
-                    <div class="flex justify-between items-center text-xs opacity-90 font-medium">
-                        <span data-i18n="subtotal">Subtotal</span>
-                        <span id="sum-subtotal">€0.00</span>
-                    </div>
-                    <div class="flex justify-between items-center text-xs opacity-90 font-medium">
-                        <span data-i18n="tipAmount">Tip Amount</span>
-                        <span id="sum-tip">€0.00</span>
-                    </div>
-                    <div class="flex justify-between items-center border-t border-white/20 pt-2 text-base font-bold">
-                        <span data-i18n="grandTotal">Grand Total</span>
-                        <span id="sum-grand" class="text-xl">€0.00</span>
-                    </div>
-                    <div class="bg-white/10 rounded-xl p-3 flex justify-between items-center mt-2">
-                        <span class="text-xs font-medium uppercase tracking-wider opacity-80" data-i18n="perPerson">Per Person</span>
-                        <span id="sum-per-person" class="text-2xl font-black">€0.00</span>
-                    </div>
-                </div>
+        </div>
 
-                <!-- Breakdown Per Person Container (for itemized or equal details) -->
-                <div id="breakdown-details" class="mt-3 space-y-1 text-xs"></div>
+        <!-- Calculation Summary Card -->
+        <div class="bg-gradient-to-br from-slate-800 to-slate-800/90 border border-slate-700/60 rounded-2xl p-5 shadow-xl space-y-4">
+            <div class="border-b border-slate-700/60 pb-3 flex items-center justify-between">
+                <span id="ui-hdr-summary" class="text-xs font-bold uppercase tracking-wider text-slate-400">Calculation Summary</span>
+                <span id="tip-amount-badge" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-brand-500/10 text-brand-500 border border-brand-500/20">Tip: €0.00</span>
             </div>
 
-            <!-- PAYMENT DETAILS EXPANDABLE SECTION -->
-            <div class="mt-4 border border-slate-200 dark:border-slate-700/60 rounded-2xl p-3.5 bg-slate-50/50 dark:bg-slate-800/30">
-                <button onclick="togglePaymentDetails()" class="w-full flex justify-between items-center text-xs font-semibold text-slate-600 dark:text-slate-300">
-                    <span class="flex items-center space-x-2">
-                        <i class="fas fa-wallet text-brand-500"></i>
-                        <span data-i18n="paymentDetails">Payment Details (Optional)</span>
-                    </span>
-                    <i id="payment-chevron" class="fas fa-chevron-down text-xs transition-transform duration-200"></i>
-                </button>
-                <div id="payment-fields" class="hidden mt-3 space-y-2">
-                    <input type="text" id="pay-iban" placeholder="IBAN (e.g. GR123456...)" oninput="savePaymentPrefs()" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                    <div class="grid grid-cols-2 gap-2">
-                        <input type="text" id="pay-revolut" placeholder="Revolut Tag (@tag)" oninput="savePaymentPrefs()" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                        <input type="text" id="pay-paypal" placeholder="PayPal.me link" oninput="savePaymentPrefs()" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                    </div>
+            <div id="summary-content" class="space-y-2">
+                <!-- Dynamically generated calculation breakdown -->
+            </div>
+
+            <div class="pt-3 border-t border-slate-700/60 flex justify-between items-center text-lg font-bold text-white">
+                <span id="ui-lbl-grandtotal">Total + Tip:</span>
+                <span id="grand-total-val" class="text-2xl text-brand-500">€0.00</span>
+            </div>
+
+            <!-- MANDATORY DATA PRIVACY CONSENT CHECKBOX -->
+            <div class="pt-3 border-t border-slate-700/60">
+                <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-700/80 flex items-start space-x-3">
+                    <input type="checkbox" id="privacy-consent" onchange="toggleConsent(this.checked)" class="mt-1 w-5 h-5 rounded border-slate-600 text-brand-600 focus:ring-brand-500 bg-slate-800 cursor-pointer">
+                    <label for="privacy-consent" class="text-xs text-slate-300 leading-snug cursor-pointer select-none">
+                        <span id="ui-consent-text">I acknowledge that all provided info and data are my own. No data is sent to third parties; all data is strictly stored locally on this device.</span>
+                    </label>
                 </div>
             </div>
 
-            <!-- MANDATORY PRIVACY & CONSENT CHECKBOX SECTION -->
-            <div class="mt-5 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-start space-x-3">
-                <input type="checkbox" id="privacy-check" onchange="handlePrivacyToggle()" class="mt-0.5 w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500 cursor-pointer">
-                <label for="privacy-check" id="privacy-text" class="text-xs text-slate-600 dark:text-slate-300 cursor-pointer select-none leading-relaxed">
-                    <!-- Dynamic localized text injected here -->
-                </label>
+            <!-- Mandatory Action Blocked Warning -->
+            <div id="consent-warning" class="text-center text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 py-2 px-3 rounded-lg flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span id="ui-consent-warning">Please check the box above to proceed with sharing or saving.</span>
             </div>
 
-            <!-- ACTION WARNING PROMPT (VISIBLE WHEN CHECKBOX IS UNCHECKED) -->
-            <div id="privacy-warning" class="mt-2 text-center text-amber-600 dark:text-amber-400 text-xs font-semibold pulse-warning flex items-center justify-center space-x-1.5">
-                <i class="fas fa-exclamation-triangle"></i>
-                <span data-i18n="confirmationRequired">Please check the confirmation box above to proceed.</span>
-            </div>
-
-            <!-- ACTION BUTTONS -->
-            <div class="grid grid-cols-3 gap-2.5 mt-4">
-                <button id="btn-share" onclick="actionShare()" disabled class="py-3 px-2 bg-brand-600 text-white rounded-2xl font-bold text-xs flex flex-col items-center justify-center space-y-1 transition opacity-40 cursor-not-allowed shadow-md">
-                    <i class="fas fa-share-nodes text-sm"></i>
-                    <span data-i18n="btnShare">Share</span>
+            <!-- Action Buttons -->
+            <div class="grid grid-cols-2 gap-3 pt-2">
+                <button id="btn-share" onclick="shareSummary()" disabled class="w-full py-3 px-4 rounded-xl font-bold text-sm bg-brand-600 hover:bg-brand-500 text-white shadow-lg shadow-brand-500/20 flex items-center justify-center space-x-2 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                    <i class="fa-solid fa-share-nodes"></i>
+                    <span id="ui-btn-share">Share Summary</span>
                 </button>
-                <button id="btn-copy" onclick="actionCopy()" disabled class="py-3 px-2 bg-slate-800 dark:bg-slate-700 text-white rounded-2xl font-bold text-xs flex flex-col items-center justify-center space-y-1 transition opacity-40 cursor-not-allowed shadow-md">
-                    <i class="fas fa-copy text-sm"></i>
-                    <span data-i18n="btnCopy">Copy</span>
-                </button>
-                <button id="btn-save" onclick="actionSaveHistory()" disabled class="py-3 px-2 bg-emerald-600 text-white rounded-2xl font-bold text-xs flex flex-col items-center justify-center space-y-1 transition opacity-40 cursor-not-allowed shadow-md">
-                    <i class="fas fa-bookmark text-sm"></i>
-                    <span data-i18n="btnSave">Save Log</span>
+                <button id="btn-copy" onclick="copySummary()" disabled class="w-full py-3 px-4 rounded-xl font-bold text-sm bg-slate-700 hover:bg-slate-600 text-white flex items-center justify-center space-x-2 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                    <i class="fa-solid fa-copy"></i>
+                    <span id="ui-btn-copy">Copy Text</span>
                 </button>
             </div>
 
-        </main>
+            <button id="btn-save" onclick="saveToHistory()" disabled class="w-full py-2.5 px-4 rounded-xl font-semibold text-xs bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-300 flex items-center justify-center space-x-2 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                <i class="fa-solid fa-bookmark"></i>
+                <span id="ui-btn-save">Save to Local History</span>
+            </button>
+        </div>
 
-        <!-- HISTORY SECTION -->
-        <section class="glass rounded-3xl p-5 sm:p-7 shadow-xl">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-sm font-bold uppercase tracking-wider flex items-center space-x-2 text-slate-700 dark:text-slate-200">
-                    <i class="fas fa-history text-brand-500"></i>
-                    <span data-i18n="historyTitle">Recent History</span>
-                </h2>
-                <button onclick="clearHistory()" class="text-xs font-semibold text-rose-500 hover:text-rose-600 transition flex items-center space-x-1">
-                    <i class="fas fa-trash-alt"></i>
-                    <span data-i18n="clearHistory">Clear Log</span>
-                </button>
+        <!-- Optional Payment Info Section -->
+        <div class="bg-slate-800/80 backdrop-blur-md border border-slate-700/60 rounded-2xl p-4 shadow-xl space-y-3">
+            <button onclick="toggleSection('payment-details')" class="w-full flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
+                <span id="ui-hdr-payment"><i class="fa-solid fa-wallet text-brand-500 mr-2"></i> Payment Details (Optional)</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div id="payment-details" class="space-y-3 pt-2 hidden">
+                <p id="ui-payment-desc" class="text-xs text-slate-400">Save your IBAN, Revolut tag, or PayPal details to attach them automatically to your shared summaries.</p>
+                <input type="text" id="iban-input" placeholder="e.g., GR1234567890... or @revolut" onchange="savePaymentInfo()" class="w-full rounded-xl bg-slate-900/90 border border-slate-700 p-2.5 text-xs text-white focus:border-brand-500 focus:outline-none">
             </div>
+        </div>
 
-            <div id="history-list" class="space-y-2.5">
-                <!-- History Items Dynamic Injection -->
+    </main>
+
+    <!-- Google / Custom Ad Banner Container -->
+    <div class="max-w-xl mx-auto my-6 px-4 w-full">
+        <div id="ad-banner-container" class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-3 text-center min-h-[90px] flex flex-col justify-center items-center relative overflow-hidden shadow-lg">
+            <span class="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Advertisement</span>
+            
+            <!-- Ad Slot Code Placeholder -->
+            <div id="google-ad-slot" class="w-full flex justify-center items-center">
+                <!-- Placeholder Banner Graphic / Link -->
+                <a href="#" target="_blank" onclick="event.preventDefault();" class="text-xs text-slate-400 hover:text-emerald-400 transition flex items-center space-x-2 py-2 px-4 rounded-lg bg-slate-900/50 border border-slate-700/50">
+                    <i class="fa-solid fa-rectangle-ad text-brand-500 text-lg"></i>
+                    <span>Split & Snap Partner • Ad Space</span>
+                </a>
             </div>
-        </section>
-
-        <!-- Footer -->
-        <footer class="mt-8 text-center text-xs text-slate-400 dark:text-slate-500 space-y-1">
-            <p>Split & Snap &bull; Privacy-first Local Calculation</p>
-            <p class="text-[10px] opacity-70">PWABuilder Ready &bull; Offline Capable</p>
-        </footer>
-
+        </div>
     </div>
 
-    <!-- MAIN APPLICATION LOGIC & TRANSLATIONS -->
+    <!-- Footer -->
+    <footer class="max-w-xl mx-auto w-full px-4 pt-6 text-center text-xs text-slate-500">
+        <p><span id="ui-ftr-privacy">100% Offline & Local Data Privacy. No external servers used.</span></p>
+        <div class="mt-2 space-x-3">
+            <a href="./privacy.html" class="hover:text-slate-300 underline">Privacy Policy</a>
+            <span>•</span>
+            <button onclick="openModal('history-modal')" class="hover:text-slate-300 underline">History Log</button>
+        </div>
+    </footer>
+
+    <!-- Local History Modal -->
+    <div id="history-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200">
+        <div class="bg-slate-800 border border-slate-700/80 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl max-h-[85vh] flex flex-col">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+                <h3 id="ui-modal-title" class="font-bold text-lg text-white"><i class="fa-solid fa-history text-brand-500 mr-2"></i>Saved Splits History</h3>
+                <button onclick="closeModal('history-modal')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div id="history-list" class="flex-1 overflow-y-auto space-y-2 pr-1">
+                <!-- Dynamic Local History Entries -->
+            </div>
+            <div class="pt-3 border-t border-slate-700 flex justify-between">
+                <button onclick="clearHistory()" id="ui-btn-clearhist" class="text-xs text-red-400 hover:text-red-300 font-semibold py-2 px-3 rounded-lg hover:bg-red-500/10 transition">Clear All History</button>
+                <button onclick="closeModal('history-modal')" id="ui-btn-closehist" class="text-xs bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 px-4 rounded-lg transition">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Script -->
     <script>
-        // 1. TRANSLATION DICTIONARY
-        const I18N = {
+        // --- TRANSLATION DICTIONARY (EN, EL, DE, FR) ---
+        const i18n = {
             en: {
-                tagline: "Smart Expense Splitter",
+                subtitle: "Easy Receipt & Expense Splitter",
                 tabEqual: "Equal Split",
-                tabItemized: "Itemized Split",
-                billTotal: "Bill Total",
-                tipSelection: "Tip Percentage",
-                numberOfPeople: "Number of People",
-                subtotal: "Subtotal",
-                tipAmount: "Tip Amount",
-                grandTotal: "Grand Total",
-                perPerson: "Per Person",
-                itemPlaceholder: "Item Name (e.g. Pizza)",
-                pricePlaceholder: "Price (€)",
-                assignedPlaceholder: "Assigned to (e.g. Alex, Maria)",
-                addBtn: "Add",
-                paymentDetails: "Payment Details (Optional)",
-                privacyNotice: "I acknowledge that all provided info and data are my own. No data is sent to third parties; all data is strictly stored locally on this device.",
-                confirmationRequired: "Please check the confirmation box above to proceed.",
-                btnShare: "Share",
-                btnCopy: "Copy",
-                btnSave: "Save Log",
-                historyTitle: "Recent History",
-                clearHistory: "Clear Log",
-                noHistory: "No saved calculations yet.",
-                copiedSuccess: "Summary copied to clipboard!",
-                savedSuccess: "Saved to calculation history!",
-                historyCleared: "History cleared.",
-                itemRequired: "Please enter an item name and valid price.",
-                shareTitle: "Split & Snap Breakdown"
+                tabItemized: "Itemized / Custom",
+                lblTotal: "Total Bill Amount",
+                lblTip: "Tip Percentage",
+                lblPeople: "Number of People",
+                lblItems: "Items / Extra Expenses",
+                btnAddItem: "Add Person/Item",
+                hdrSummary: "Calculation Summary",
+                lblGrandTotal: "Total + Tip:",
+                btnShare: "Share Summary",
+                btnCopy: "Copy Text",
+                btnSave: "Save to Local History",
+                hdrPayment: "Payment Details (Optional)",
+                paymentDesc: "Save your IBAN, Revolut tag, or PayPal details to attach them automatically to your shared summaries.",
+                ftrPrivacy: "100% Offline & Local Data Privacy. No external servers used.",
+                modalTitle: "Saved Splits History",
+                btnClearHist: "Clear All History",
+                btnCloseHist: "Close",
+                consentText: "I acknowledge that all provided info and data are my own. No data is sent to third parties; all data is strictly stored locally on this device.",
+                consentWarning: "Please check the box above to proceed with sharing or saving.",
+                eachText: "each",
+                sharedVia: "Calculated with Split & Snap",
+                noHistory: "No saved splits found.",
+                paymentLabel: "Pay to:"
             },
             el: {
-                tagline: "Έξυπνος Διαχωρισμός Εξόδων",
-                tabEqual: "Ισόποσος Επιμερισμός",
-                tabItemized: "Ανά Αντικείμενο",
-                billTotal: "Σύνολο Λογαριασμού",
-                tipSelection: "Ποσοστό Φιλοδωρήματος",
-                numberOfPeople: "Αριθμός Ατόμων",
-                subtotal: "Μερικό Σύνολο",
-                tipAmount: "Φιλοδώρημα",
-                grandTotal: "Γενικό Σύνολο",
-                perPerson: "Ανά Άτομο",
-                itemPlaceholder: "Όνομα Είδους (π.χ. Πίτσα)",
-                pricePlaceholder: "Τιμή (€)",
-                assignedPlaceholder: "Αναθέστε σε (π.χ. Αλέξης, Μαρία)",
-                addBtn: "Προσθήκη",
-                paymentDetails: "Στοιχεία Πληρωμής (Προαιρετικό)",
-                privacyNotice: "Δηλώνω ότι όλα τα στοιχεία είναι δικά μου. Καμία πληροφορία δεν αποστέλλεται σε τρίτους· όλα αποθηκεύονται αποκλειστικά τοπικά στη συσκευή.",
-                confirmationRequired: "Παρακαλώ επιλέξτε το πλαίσιο επιβεβαίωσης παραπάνω για να συνεχίσετε.",
+                subtitle: "Εύκολος Διαχωρισμός Λογαριασμών & Εξόδων",
+                tabEqual: "Ίσος Διαχωρισμός",
+                tabItemized: "Ανά Άτομο / Πιάτο",
+                lblTotal: "Συνολικό Ποσό Λογαριασμού",
+                lblTip: "Ποσοστό Φιλοδωρήματος (Tip)",
+                lblPeople: "Αριθμός Ατόμων",
+                lblItems: "Επιμέρους Έξοδα / Άτομα",
+                btnAddItem: "Προσθήκη Ατόμου",
+                hdrSummary: "Σύνοψη Υπολογισμού",
+                lblGrandTotal: "Σύνολο + Tip:",
                 btnShare: "Κοινοποίηση",
-                btnCopy: "Αντιγραφή",
-                btnSave: "Αποθήκευση",
-                historyTitle: "Πρόσφατο Ιστορικό",
-                clearHistory: "Καθαρισμός",
-                noHistory: "Δεν υπάρχουν αποθηκευμένοι υπολογισμοί.",
-                copiedSuccess: "Η σύνοψη αντιγράφηκε στο πρόχειρο!",
-                savedSuccess: "Αποθηκεύτηκε στο ιστορικό!",
-                historyCleared: "Το ιστορικό καθαρίστηκε.",
-                itemRequired: "Παρακαλώ εισάγετε όνομα είδους και έγκυρη τιμή.",
-                shareTitle: "Αναφορά Split & Snap"
+                btnCopy: "Αντιγραφή Κειμένου",
+                btnSave: "Αποθήκευση στο Ιστορικό",
+                hdrPayment: "Στοιχεία Πληρωμής (Προαιρετικό)",
+                paymentDesc: "Αποθηκεύστε το IBAN, Revolut tag ή PayPal για να προστίθενται αυτόματα στις συνόψεις.",
+                ftrPrivacy: "100% Εκτός Σύνδεσης & Τοπική Ιδιωτικότητα. Κανένας εξωτερικός διακομιστής.",
+                modalTitle: "Ιστορικό Υπολογισμών",
+                btnClearHist: "Καθαρισμός Ιστορικού",
+                btnCloseHist: "Κλείσιμο",
+                consentText: "Δηλώνω ότι όλα τα στοιχεία είναι δικά μου. Καμία πληροφορία δεν αποστέλλεται σε τρίτους· όλα αποθηκεύονται αποκλειστικά τοπικά στη συσκευή.",
+                consentWarning: "Παρακαλώ επιλέξτε το πλαίσιο επιβεβαίωσης για να προχωρήσετε.",
+                eachText: "το άτομο",
+                sharedVia: "Υπολογίστηκε με το Split & Snap",
+                noHistory: "Δεν βρέθηκε αποθηκευμένο ιστορικό.",
+                paymentLabel: "Πληρωμή σε:"
             },
             de: {
-                tagline: "Intelligenter Rechnungs-Teiler",
+                subtitle: "Einfacher Rechnungs- & Ausgaben-Splitter",
                 tabEqual: "Gleiche Aufteilung",
                 tabItemized: "Einzelabrechnung",
-                billTotal: "Gesamtbetrag",
-                tipSelection: "Trinkgeld Prozentsatz",
-                numberOfPeople: "Anzahl Personen",
-                subtotal: "Zwischensumme",
-                tipAmount: "Trinkgeld",
-                grandTotal: "Gesamtsumme",
-                perPerson: "Pro Person",
-                itemPlaceholder: "Artikelname (z. B. Pizza)",
-                pricePlaceholder: "Preis (€)",
-                assignedPlaceholder: "Zugeordnet an (z. B. Alex, Maria)",
-                addBtn: "Hinzufügen",
-                paymentDetails: "Zahlungsdetails (Optional)",
-                privacyNotice: "Ich bestätige, dass alle angegebenen Daten meine eigenen sind. Es werden keine Daten an Dritte übermittelt; alle Daten werden ausschließlich lokal gespeichert.",
-                confirmationRequired: "Bitte aktivieren Sie das Bestätigungsfeld oben, um fortzufahren.",
+                lblTotal: "Gesamtbetrag der Rechnung",
+                lblTip: "Trinkgeld Prozentsatz",
+                lblPeople: "Anzahl der Personen",
+                lblItems: "Einzelne Ausgaben / Personen",
+                btnAddItem: "Person hinzufügen",
+                hdrSummary: "Zusammenfassung",
+                lblGrandTotal: "Gesamt + Trinkgeld:",
                 btnShare: "Teilen",
-                btnCopy: "Kopieren",
-                btnSave: "Speichern",
-                historyTitle: "Verlauf",
-                clearHistory: "Löschen",
-                noHistory: "Noch keine Berechnungen gespeichert.",
-                copiedSuccess: "Zusammenfassung in die Zwischenablage kopiert!",
-                savedSuccess: "Im Verlauf gespeichert!",
-                historyCleared: "Verlauf gelöscht.",
-                itemRequired: "Bitte geben Sie einen Namen und einen gültigen Preis ein.",
-                shareTitle: "Split & Snap Abrechnung"
+                btnCopy: "Text kopieren",
+                btnSave: "Im Verlauf speichern",
+                hdrPayment: "Zahlungsdetails (Optional)",
+                paymentDesc: "Speichern Sie Ihre IBAN-, Revolut- oder PayPal-Daten für automatische Zusammenfassungen.",
+                ftrPrivacy: "100% Offline & Datenschutz. Keine externen Server.",
+                modalTitle: "Gespeicherter Verlauf",
+                btnClearHist: "Verlauf löschen",
+                btnCloseHist: "Schließen",
+                consentText: "Ich bestätige, dass alle angegebenen Daten meine eigenen sind. Es werden keine Daten an Dritte übermittelt; alle Daten werden ausschließlich lokal gespeichert.",
+                consentWarning: "Bitte aktivieren Sie das Kontrollkästchen, um fortzufahren.",
+                eachText: "pro Person",
+                sharedVia: "Berechnet mit Split & Snap",
+                noHistory: "Kein Verlauf gefunden.",
+                paymentLabel: "Zahlung an:"
             },
             fr: {
-                tagline: "Partage Intelligent de Factures",
-                tabEqual: "Partage Égal",
-                tabItemized: "Par Article",
-                billTotal: "Total Facture",
-                tipSelection: "Pourcentage Pourboire",
-                numberOfPeople: "Nombre de Personnes",
-                subtotal: "Sous-total",
-                tipAmount: "Pourboire",
-                grandTotal: "Total Général",
-                perPerson: "Par Personne",
-                itemPlaceholder: "Nom de l'article (ex. Pizza)",
-                pricePlaceholder: "Prix (€)",
-                assignedPlaceholder: "Attribué à (ex. Alexis, Marie)",
-                addBtn: "Ajouter",
-                paymentDetails: "Détails de Paiement (Optionnel)",
-                privacyNotice: "Je confirme que toutes les informations fournies me sont propres. Aucune donnée n'est transmise à des tiers; tout est stocké uniquement en local.",
-                confirmationRequired: "Veuillez cocher la case de confirmation ci-dessus pour continuer.",
+                subtitle: "Partage Facile de Factures & Dépenses",
+                tabEqual: "Partage Équitable",
+                tabItemized: "Partage Personnalisé",
+                lblTotal: "Montant Total de la Facture",
+                lblTip: "Pourcentage de Pourboire",
+                lblPeople: "Nombre de Personnes",
+                lblItems: "Articles / Dépenses",
+                btnAddItem: "Ajouter une Personne",
+                hdrSummary: "Résumé du Calcul",
+                lblGrandTotal: "Total + Pourboire:",
                 btnShare: "Partager",
-                btnCopy: "Copier",
-                btnSave: "Sauvegarder",
-                historyTitle: "Historique Récents",
-                clearHistory: "Effacer",
-                noHistory: "Aucun calcul enregistré pour le moment.",
-                copiedSuccess: "Résumé copié dans le presse-papiers !",
-                savedSuccess: "Enregistré dans l'historique !",
-                historyCleared: "Historique effacé.",
-                itemRequired: "Veuillez saisir un nom et un prix valide.",
-                shareTitle: "Décompte Split & Snap"
+                btnCopy: "Copier le Texte",
+                btnSave: "Sauvegarder dans l'Historique",
+                hdrPayment: "Détails de Paiement (Optionnel)",
+                paymentDesc: "Enregistrez vos coordonnées IBAN, Revolut ou PayPal pour les ajouter à vos résumés.",
+                ftrPrivacy: "100% Hors Ligne & Données Privées. Aucun serveur externe.",
+                modalTitle: "Historique des Calculs",
+                btnClearHist: "Effacer l'Historique",
+                btnCloseHist: "Fermer",
+                consentText: "Je confirme que toutes les informations fournies me sont propres. Aucune donnée n'est transmise à des tiers; tout est stocké uniquement en local.",
+                consentWarning: "Veuillez cocher la case ci-dessus pour continuer.",
+                eachText: "par personne",
+                sharedVia: "Calculé avec Split & Snap",
+                noHistory: "Aucun historique trouvé.",
+                paymentLabel: "Payer à:"
             }
         };
 
-        // 2. STATE MANAGEMENT
+        // State Management
         let currentLang = localStorage.getItem('snapsplit_lang') || 'en';
-        let currentMode = 'equal'; // 'equal' or 'itemized'
-        let currentTipPct = 10;
-        let peopleCount = 2;
-        let itemizedItems = [];
+        let currentMode = 'equal';
+        let tipPercent = 10;
+        let itemCounter = 0;
+        let isConsented = false;
 
-        // 3. INITIALIZATION
+        // Initialize App
         window.addEventListener('DOMContentLoaded', () => {
-            initTheme();
-            initLanguage();
-            loadPaymentPrefs();
-            renderHistory();
-            calculateEqual();
-            registerServiceWorker();
+            document.getElementById('lang-select').value = currentLang;
+            applyTranslations();
+            
+            // Populate sample itemized rows
+            addItemRow('Person 1', 15);
+            addItemRow('Person 2', 25);
+            
+            // Load saved IBAN
+            const savedIban = localStorage.getItem('snapsplit_iban');
+            if (savedIban) document.getElementById('iban-input').value = savedIban;
+
+            calculate();
+            toggleConsent(false);
         });
 
-        // 4. THEME CONTROLLER
-        function initTheme() {
-            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                document.documentElement.classList.add('dark');
-            }
-            document.getElementById('theme-toggle').addEventListener('click', () => {
-                document.documentElement.classList.toggle('dark');
-            });
-        }
-
-        // 5. LANGUAGE CONTROLLER
-        function initLanguage() {
-            const select = document.getElementById('lang-select');
-            select.value = currentLang;
-            select.addEventListener('change', (e) => {
-                currentLang = e.target.value;
-                localStorage.setItem('snapsplit_lang', currentLang);
-                applyTranslations();
-                recalculate();
-            });
+        function changeLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('snapsplit_lang', lang);
             applyTranslations();
+            calculate();
         }
 
         function applyTranslations() {
-            const dict = I18N[currentLang] || I18N.en;
-            
-            // Text nodes
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (dict[key]) el.textContent = dict[key];
-            });
-
-            // Placeholders
-            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-                const key = el.getAttribute('data-i18n-placeholder');
-                if (dict[key]) el.placeholder = dict[key];
-            });
-
-            // Privacy Notice Text Injection
-            document.getElementById('privacy-text').textContent = dict.privacyNotice;
-
-            // Update empty history state if present
-            const histContainer = document.getElementById('history-list');
-            if (histContainer.children.length === 1 && histContainer.children[0].classList.contains('no-hist-msg')) {
-                histContainer.children[0].textContent = dict.noHistory;
-            }
+            const t = i18n[currentLang];
+            document.getElementById('ui-subtitle').innerText = t.subtitle;
+            document.getElementById('ui-tab-equal').innerText = t.tabEqual;
+            document.getElementById('ui-tab-itemized').innerText = t.tabItemized;
+            document.getElementById('ui-lbl-total').innerText = t.lblTotal;
+            document.getElementById('ui-lbl-tip').innerText = t.lblTip;
+            document.getElementById('ui-lbl-people').innerText = t.lblPeople;
+            document.getElementById('ui-lbl-items').innerText = t.lblItems;
+            document.getElementById('ui-btn-additem').innerText = t.btnAddItem;
+            document.getElementById('ui-hdr-summary').innerText = t.hdrSummary;
+            document.getElementById('ui-lbl-grandtotal').innerText = t.lblGrandTotal;
+            document.getElementById('ui-btn-share').innerText = t.btnShare;
+            document.getElementById('ui-btn-copy').innerText = t.btnCopy;
+            document.getElementById('ui-btn-save').innerText = t.btnSave;
+            document.getElementById('ui-hdr-payment').innerHTML = `<i class="fa-solid fa-wallet text-brand-500 mr-2"></i> ${t.hdrPayment}`;
+            document.getElementById('ui-payment-desc').innerText = t.paymentDesc;
+            document.getElementById('ui-ftr-privacy').innerText = t.ftrPrivacy;
+            document.getElementById('ui-modal-title').innerHTML = `<i class="fa-solid fa-history text-brand-500 mr-2"></i> ${t.modalTitle}`;
+            document.getElementById('ui-btn-clearhist').innerText = t.btnClearHist;
+            document.getElementById('ui-btn-closehist').innerText = t.btnCloseHist;
+            document.getElementById('ui-consent-text').innerText = t.consentText;
+            document.getElementById('ui-consent-warning').innerText = t.consentWarning;
         }
 
-        // 6. PRIVACY & MANDATORY CHECKBOX CONTROL
-        function handlePrivacyToggle() {
-            const isChecked = document.getElementById('privacy-check').checked;
+        function toggleConsent(checked) {
+            isConsented = checked;
             const btnShare = document.getElementById('btn-share');
             const btnCopy = document.getElementById('btn-copy');
             const btnSave = document.getElementById('btn-save');
-            const warningPrompt = document.getElementById('privacy-warning');
+            const warning = document.getElementById('consent-warning');
 
-            if (isChecked) {
-                btnShare.disabled = false;
-                btnCopy.disabled = false;
-                btnSave.disabled = false;
+            btnShare.disabled = !checked;
+            btnCopy.disabled = !checked;
+            btnSave.disabled = !checked;
 
-                [btnShare, btnCopy, btnSave].forEach(btn => {
-                    btn.classList.remove('opacity-40', 'cursor-not-allowed');
-                    btn.classList.add('hover:opacity-90', 'active:scale-95');
-                });
-
-                warningPrompt.classList.add('hidden');
+            if (checked) {
+                warning.classList.add('hidden');
             } else {
-                btnShare.disabled = true;
-                btnCopy.disabled = true;
-                btnSave.disabled = true;
-
-                [btnShare, btnCopy, btnSave].forEach(btn => {
-                    btn.classList.add('opacity-40', 'cursor-not-allowed');
-                    btn.classList.remove('hover:opacity-90', 'active:scale-95');
-                });
-
-                warningPrompt.classList.remove('hidden');
+                warning.classList.remove('hidden');
             }
         }
 
-        // 7. MODE SWITCHING
-        function switchMode(mode) {
+        function setMode(mode) {
             currentMode = mode;
-            const tabEqual = document.getElementById('tab-equal');
-            const tabItemized = document.getElementById('tab-itemized');
-            const engineEqual = document.getElementById('engine-equal');
-            const engineItemized = document.getElementById('engine-itemized');
+            const tabEq = document.getElementById('tab-equal');
+            const tabIt = document.getElementById('tab-itemized');
+            const eqCtrl = document.getElementById('equal-controls');
+            const itCtrl = document.getElementById('itemized-controls');
 
             if (mode === 'equal') {
-                tabEqual.className = "py-2.5 text-xs sm:text-sm font-semibold rounded-xl transition duration-200 bg-white dark:bg-slate-700 text-brand-600 dark:text-white shadow-sm flex items-center justify-center space-x-2";
-                tabItemized.className = "py-2.5 text-xs sm:text-sm font-semibold rounded-xl transition duration-200 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center justify-center space-x-2";
-                engineEqual.classList.remove('hidden');
-                engineItemized.classList.add('hidden');
-                calculateEqual();
+                tabEq.className = "flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold transition-all duration-200 bg-brand-600 text-white shadow-md flex items-center justify-center space-x-2";
+                tabIt.className = "flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-slate-200 flex items-center justify-center space-x-2";
+                eqCtrl.classList.remove('hidden');
+                itCtrl.classList.add('hidden');
             } else {
-                tabItemized.className = "py-2.5 text-xs sm:text-sm font-semibold rounded-xl transition duration-200 bg-white dark:bg-slate-700 text-brand-600 dark:text-white shadow-sm flex items-center justify-center space-x-2";
-                tabEqual.className = "py-2.5 text-xs sm:text-sm font-semibold rounded-xl transition duration-200 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center justify-center space-x-2";
-                engineItemized.classList.remove('hidden');
-                engineEqual.classList.add('hidden');
-                calculateItemized();
+                tabIt.className = "flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold transition-all duration-200 bg-brand-600 text-white shadow-md flex items-center justify-center space-x-2";
+                tabEq.className = "flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-slate-200 flex items-center justify-center space-x-2";
+                itCtrl.classList.remove('hidden');
+                eqCtrl.classList.add('hidden');
             }
+            calculate();
         }
 
-        // 8. EQUAL SPLIT ENGINE LOGIC
-        function setTip(pct) {
-            currentTipPct = pct;
-            document.getElementById('eq-custom-tip').value = '';
-            
-            // Highlight Tip Buttons
-            document.querySelectorAll('.tip-btn').forEach((btn, idx) => {
-                const values = [0, 5, 10, 15];
-                if (values[idx] === pct) {
-                    btn.className = "tip-btn py-2.5 text-xs font-bold rounded-xl border border-brand-500 bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 transition";
+        function setTip(val) {
+            tipPercent = val;
+            document.getElementById('custom-tip').value = '';
+            updateTipUI();
+            calculate();
+        }
+
+        function setCustomTip(val) {
+            tipPercent = parseFloat(val) || 0;
+            updateTipUI(true);
+            calculate();
+        }
+
+        function updateTipUI(isCustom = false) {
+            const btns = document.querySelectorAll('.tip-btn');
+            btns.forEach(btn => {
+                const btnVal = parseFloat(btn.innerText);
+                if (!isCustom && btnVal === tipPercent) {
+                    btn.className = "tip-btn py-2 rounded-xl text-xs font-bold border border-brand-500 text-brand-500 bg-brand-500/10 transition";
                 } else {
-                    btn.className = "tip-btn py-2.5 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-brand-500 transition";
+                    btn.className = "tip-btn py-2 rounded-xl text-xs font-bold border border-slate-700 bg-slate-900/60 hover:border-brand-500 transition";
                 }
             });
-            calculateEqual();
         }
 
-        function setCustomTip() {
-            const val = parseFloat(document.getElementById('eq-custom-tip').value);
-            currentTipPct = isNaN(val) ? 0 : val;
-            document.querySelectorAll('.tip-btn').forEach(btn => {
-                btn.className = "tip-btn py-2.5 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-brand-500 transition";
-            });
-            calculateEqual();
+        function adjustPeople(delta) {
+            const el = document.getElementById('people-count');
+            let val = parseInt(el.value) || 1;
+            val = Math.max(1, val + delta);
+            el.value = val;
+            calculate();
         }
 
-        function changePeople(delta) {
-            peopleCount = Math.max(1, peopleCount + delta);
-            document.getElementById('eq-people-count').textContent = peopleCount;
-            calculateEqual();
+        function addItemRow(name = '', amount = '') {
+            itemCounter++;
+            const container = document.getElementById('item-rows');
+            const row = document.createElement('div');
+            row.id = `item-row-${itemCounter}`;
+            row.className = "flex items-center space-x-2";
+            row.innerHTML = `
+                <input type="text" placeholder="Name" value="${name}" oninput="calculate()" class="item-name flex-1 rounded-xl bg-slate-900/90 border border-slate-700 p-2.5 text-xs text-white focus:border-brand-500 focus:outline-none">
+                <div class="relative w-28">
+                    <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-slate-500 text-xs">€</span>
+                    <input type="number" step="0.01" placeholder="0.00" value="${amount}" oninput="calculate()" class="item-amount w-full rounded-xl bg-slate-900/90 border border-slate-700 p-2.5 pl-6 text-xs text-white focus:border-brand-500 focus:outline-none">
+                </div>
+                <button type="button" onclick="removeItemRow(${itemCounter})" class="p-2 text-slate-500 hover:text-red-400 transition"><i class="fa-solid fa-trash-can"></i></button>
+            `;
+            container.appendChild(row);
+            calculate();
         }
 
-        function calculateEqual() {
-            const bill = parseFloat(document.getElementById('eq-bill').value) || 0;
-            const tipVal = bill * (currentTipPct / 100);
-            const total = bill + tipVal;
-            const perPerson = total / peopleCount;
-
-            updateSummaryDisplay(bill, tipVal, total, perPerson);
-            
-            // Clear detailed breakdown in equal mode
-            document.getElementById('breakdown-details').innerHTML = '';
+        function removeItemRow(id) {
+            const row = document.getElementById(`item-row-${id}`);
+            if (row) row.remove();
+            calculate();
         }
 
-        // 9. ITEMIZED SPLIT ENGINE LOGIC
-        function addItem() {
-            const nameEl = document.getElementById('itm-name');
-            const priceEl = document.getElementById('itm-price');
-            const assignedEl = document.getElementById('itm-assigned');
+        function calculate() {
+            const summaryDiv = document.getElementById('summary-content');
+            const grandTotalEl = document.getElementById('grand-total-val');
+            const tipBadge = document.getElementById('tip-amount-badge');
+            const t = i18n[currentLang];
 
-            const name = nameEl.value.trim();
-            const price = parseFloat(priceEl.value);
-            const assigned = assignedEl.value.trim() || 'Everyone';
+            if (currentMode === 'equal') {
+                const total = parseFloat(document.getElementById('total-amount').value) || 0;
+                const people = parseInt(document.getElementById('people-count').value) || 1;
+                const tipVal = total * (tipPercent / 100);
+                const grandTotal = total + tipVal;
+                const perPerson = grandTotal / people;
 
-            if (!name || isNaN(price) || price <= 0) {
-                showToast((I18N[currentLang] || I18N.en).itemRequired, true);
-                return;
-            }
+                tipBadge.innerText = `Tip: €${tipVal.toFixed(2)}`;
+                grandTotalEl.innerText = `€${grandTotal.toFixed(2)}`;
 
-            itemizedItems.push({ id: Date.now(), name, price, assigned });
-            nameEl.value = '';
-            priceEl.value = '';
-            assignedEl.value = '';
-
-            renderItemsList();
-            calculateItemized();
-        }
-
-        function removeItem(id) {
-            itemizedItems = itemizedItems.filter(item => item.id !== id);
-            renderItemsList();
-            calculateItemized();
-        }
-
-        function renderItemsList() {
-            const container = document.getElementById('items-list-container');
-            container.innerHTML = '';
-
-            itemizedItems.forEach(item => {
-                const itemEl = document.createElement('div');
-                itemEl.className = "flex justify-between items-center p-2.5 bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 rounded-xl text-xs";
-                itemEl.innerHTML = `
-                    <div class="truncate pr-2">
-                        <span class="font-bold text-slate-800 dark:text-slate-100">${escapeHtml(item.name)}</span>
-                        <span class="text-slate-400 dark:text-slate-500 text-[10px] block">${escapeHtml(item.assigned)}</span>
-                    </div>
-                    <div class="flex items-center space-x-3 shrink-0">
-                        <span class="font-bold">€${item.price.toFixed(2)}</span>
-                        <button onclick="removeItem(${item.id})" class="text-rose-500 hover:text-rose-600 transition p-1">
-                            <i class="fas fa-times"></i>
-                        </button>
+                summaryDiv.innerHTML = `
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-slate-400">${people} People Split:</span>
+                        <span class="font-bold text-xl text-white">€${perPerson.toFixed(2)} <span class="text-xs font-normal text-slate-400">${t.eachText}</span></span>
                     </div>
                 `;
-                container.appendChild(itemEl);
-            });
-        }
-
-        function calculateItemized() {
-            const tipPct = parseFloat(document.getElementById('itm-tip-pct').value) || 0;
-            const subtotal = itemizedItems.reduce((acc, item) => acc + item.price, 0);
-            const tipVal = subtotal * (tipPct / 100);
-            const grandTotal = subtotal + tipVal;
-
-            // Calculate per person mapped totals
-            const personMap = {};
-            itemizedItems.forEach(item => {
-                const names = item.assigned.split(',').map(n => n.trim()).filter(n => n.length > 0);
-                const sharePrice = item.price / (names.length || 1);
+            } else {
+                const nameInputs = document.querySelectorAll('.item-name');
+                const amountInputs = document.querySelectorAll('.item-amount');
                 
-                names.forEach(name => {
-                    personMap[name] = (personMap[name] || 0) + sharePrice;
+                let subtotal = 0;
+                const items = [];
+
+                amountInputs.forEach((input, index) => {
+                    const amt = parseFloat(input.value) || 0;
+                    const name = nameInputs[index].value.trim() || `Person ${index + 1}`;
+                    subtotal += amt;
+                    items.push({ name, amt });
                 });
-            });
 
-            const uniquePeopleCount = Object.keys(personMap).length || 1;
-            const avgPerPerson = grandTotal / uniquePeopleCount;
+                // Set bill input if empty
+                const billInput = document.getElementById('total-amount');
+                if (!billInput.value || parseFloat(billInput.value) === 0) {
+                    billInput.value = subtotal > 0 ? subtotal.toFixed(2) : '';
+                }
 
-            updateSummaryDisplay(subtotal, tipVal, grandTotal, avgPerPerson);
+                const total = parseFloat(billInput.value) || subtotal;
+                const tipVal = total * (tipPercent / 100);
+                const grandTotal = total + tipVal;
+                const multiplier = subtotal > 0 ? (grandTotal / subtotal) : 1;
 
-            // Render Itemized breakdown breakdown HTML
-            const breakdownEl = document.getElementById('breakdown-details');
-            breakdownEl.innerHTML = '';
+                tipBadge.innerText = `Tip: €${tipVal.toFixed(2)}`;
+                grandTotalEl.innerText = `€${grandTotal.toFixed(2)}`;
 
-            if (Object.keys(personMap).length > 0) {
-                const multiplier = 1 + (tipPct / 100);
-                Object.entries(personMap).forEach(([person, rawAmount]) => {
-                    const finalShare = rawAmount * multiplier;
-                    const row = document.createElement('div');
-                    row.className = "flex justify-between items-center py-1 border-b border-slate-200/50 dark:border-slate-700/30 text-slate-600 dark:text-slate-300";
-                    row.innerHTML = `
-                        <span>${escapeHtml(person)}</span>
-                        <span class="font-bold">€${finalShare.toFixed(2)}</span>
+                let html = '';
+                items.forEach(item => {
+                    const finalShare = item.amt * multiplier;
+                    html += `
+                        <div class="flex justify-between items-center text-xs py-1 border-b border-slate-700/40">
+                            <span class="text-slate-300 font-medium">${item.name} (€${item.amt.toFixed(2)}):</span>
+                            <span class="font-bold text-white text-sm">€${finalShare.toFixed(2)}</span>
+                        </div>
                     `;
-                    breakdownEl.appendChild(row);
                 });
+
+                summaryDiv.innerHTML = html || `<p class="text-xs text-slate-500 italic">Add persons or items above.</p>`;
             }
         }
 
-        // 10. SUMMARY DISPLAY UPDATER
-        function updateSummaryDisplay(subtotal, tip, grandTotal, perPerson) {
-            document.getElementById('sum-subtotal').textContent = `€${subtotal.toFixed(2)}`;
-            document.getElementById('sum-tip').textContent = `€${tip.toFixed(2)}`;
-            document.getElementById('sum-grand').textContent = `€${grandTotal.toFixed(2)}`;
-            document.getElementById('sum-per-person').textContent = `€${perPerson.toFixed(2)}`;
-        }
+        function generateSummaryText() {
+            const t = i18n[currentLang];
+            const grandTotal = document.getElementById('grand-total-val').innerText;
+            const iban = localStorage.getItem('snapsplit_iban') || '';
+            let text = `🧾 *Split & Snap Summary*\n`;
 
-        function recalculate() {
-            if (currentMode === 'equal') calculateEqual();
-            else calculateItemized();
-        }
-
-        // 11. PAYMENT DETAILS PERSISTENCE
-        function togglePaymentDetails() {
-            const fields = document.getElementById('payment-fields');
-            const chevron = document.getElementById('payment-chevron');
-            fields.classList.toggle('hidden');
-            chevron.classList.toggle('rotate-180');
-        }
-
-        function savePaymentPrefs() {
-            const prefs = {
-                iban: document.getElementById('pay-iban').value,
-                revolut: document.getElementById('pay-revolut').value,
-                paypal: document.getElementById('pay-paypal').value,
-            };
-            localStorage.setItem('snapsplit_payment', JSON.stringify(prefs));
-        }
-
-        function loadPaymentPrefs() {
-            const raw = localStorage.getItem('snapsplit_payment');
-            if (raw) {
-                try {
-                    const prefs = JSON.parse(raw);
-                    document.getElementById('pay-iban').value = prefs.iban || '';
-                    document.getElementById('pay-revolut').value = prefs.revolut || '';
-                    document.getElementById('pay-paypal').value = prefs.paypal || '';
-                } catch(e) {}
-            }
-        }
-
-        // 12. TEXT SUMMARY GENERATOR FOR SHARING & COPYING
-        function generateShareString() {
-            const dict = I18N[currentLang] || I18N.en;
-            const subtotal = document.getElementById('sum-subtotal').textContent;
-            const tip = document.getElementById('sum-tip').textContent;
-            const grand = document.getElementById('sum-grand').textContent;
-            const perPerson = document.getElementById('sum-per-person').textContent;
-
-            let text = `🧾 *Split & Snap Breakdown*\n`;
-            text += `---------------------------\n`;
-            text += `${dict.subtotal}: ${subtotal}\n`;
-            text += `${dict.tipAmount}: ${tip}\n`;
-            text += `${dict.grandTotal}: ${grand}\n`;
-            text += `${dict.perPerson}: ${perPerson}\n`;
-
-            if (currentMode === 'itemized' && itemizedItems.length > 0) {
-                text += `\n📋 *${dict.tabItemized}:*\n`;
-                const tipPct = parseFloat(document.getElementById('itm-tip-pct').value) || 0;
-                const multiplier = 1 + (tipPct / 100);
-                
-                const personMap = {};
-                itemizedItems.forEach(item => {
-                    const names = item.assigned.split(',').map(n => n.trim()).filter(n => n.length > 0);
-                    const sharePrice = item.price / (names.length || 1);
-                    names.forEach(name => {
-                        personMap[name] = (personMap[name] || 0) + sharePrice;
-                    });
-                });
-
-                Object.entries(personMap).forEach(([person, rawAmount]) => {
-                    text += `• ${person}: €${(rawAmount * multiplier).toFixed(2)}\n`;
+            if (currentMode === 'equal') {
+                const people = document.getElementById('people-count').value || 1;
+                const perPerson = (parseFloat(grandTotal.replace('€', '')) / people).toFixed(2);
+                text += `• Total: ${grandTotal} (inc. ${tipPercent}% Tip)\n`;
+                text += `• ${people} People: *€${perPerson}* ${t.eachText}\n`;
+            } else {
+                text += `• Total: ${grandTotal} (inc. ${tipPercent}% Tip)\n`;
+                const summaryDivs = document.querySelectorAll('#summary-content > div');
+                summaryDivs.forEach(div => {
+                    text += `• ${div.innerText.replace('\n', ' ')}\n`;
                 });
             }
 
-            // Append Payment Details if present
-            const iban = document.getElementById('pay-iban').value.trim();
-            const revolut = document.getElementById('pay-revolut').value.trim();
-            const paypal = document.getElementById('pay-paypal').value.trim();
-
-            if (iban || revolut || paypal) {
-                text += `\n💳 *${dict.paymentDetails}:*\n`;
-                if (iban) text += `IBAN: ${iban}\n`;
-                if (revolut) text += `Revolut: ${revolut}\n`;
-                if (paypal) text += `PayPal: ${paypal}\n`;
+            if (iban) {
+                text += `\n💳 *${t.paymentLabel}* ${iban}\n`;
             }
 
-            text += `\nCalculated with Split & Snap ⚡`;
+            text += `\n_⚡ ${t.sharedVia}_`;
             return text;
         }
 
-        // 13. ACTIONS: SHARE, COPY, SAVE
-        async function actionShare() {
-            if (!document.getElementById('privacy-check').checked) return;
-
-            const text = generateShareString();
-            const dict = I18N[currentLang] || I18N.en;
-
+        async function shareSummary() {
+            if (!isConsented) return;
+            const text = generateSummaryText();
             if (navigator.share) {
                 try {
-                    await navigator.share({
-                        title: dict.shareTitle,
-                        text: text
-                    });
-                } catch (err) {
-                    if (err.name !== 'AbortError') actionCopy();
+                    await navigator.share({ title: 'Split & Snap Summary', text: text });
+                } catch (e) {
+                    copySummary();
                 }
             } else {
-                actionCopy();
+                copySummary();
             }
         }
 
-        function actionCopy() {
-            if (!document.getElementById('privacy-check').checked) return;
-
-            const text = generateShareString();
-            const dict = I18N[currentLang] || I18N.en;
-
-            // ExecCommand fallback for strict iFrame restrictions
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            textarea.style.position = 'fixed';
-            textarea.style.opacity = '0';
-            document.body.appendChild(textarea);
-            textarea.select();
-            
-            try {
-                document.execCommand('copy');
-                showToast(dict.copiedSuccess);
-            } catch (err) {
-                showToast('Copy failed', true);
-            } finally {
-                document.body.removeChild(textarea);
-            }
-        }
-
-        function actionSaveHistory() {
-            if (!document.getElementById('privacy-check').checked) return;
-
-            const dict = I18N[currentLang] || I18N.en;
-            const grand = document.getElementById('sum-grand').textContent;
-            const perPerson = document.getElementById('sum-per-person').textContent;
-
-            const record = {
-                id: Date.now(),
-                date: new Date().toLocaleDateString(currentLang, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
-                mode: currentMode,
-                total: grand,
-                perPerson: perPerson
-            };
-
-            const history = getHistory();
-            history.unshift(record);
-            localStorage.setItem('snapsplit_history', JSON.stringify(history.slice(0, 15))); // Keep max 15
-            renderHistory();
-            showToast(dict.savedSuccess);
-        }
-
-        // 14. HISTORY LOG RENDERING
-        function getHistory() {
-            try {
-                return JSON.parse(localStorage.getItem('snapsplit_history')) || [];
-            } catch(e) {
-                return [];
-            }
-        }
-
-        function renderHistory() {
-            const dict = I18N[currentLang] || I18N.en;
-            const history = getHistory();
-            const container = document.getElementById('history-list');
-            container.innerHTML = '';
-
-            if (history.length === 0) {
-                container.innerHTML = `<p class="no-hist-msg text-xs text-slate-400 dark:text-slate-500 text-center py-3">${dict.noHistory}</p>`;
-                return;
-            }
-
-            history.forEach(item => {
-                const el = document.createElement('div');
-                el.className = "flex justify-between items-center p-3 bg-white dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-xs";
-                el.innerHTML = `
-                    <div>
-                        <div class="font-bold text-slate-800 dark:text-slate-200">${item.total} <span class="font-normal text-slate-400">(${item.perPerson} / person)</span></div>
-                        <div class="text-[10px] text-slate-400">${item.date} &bull; ${item.mode.toUpperCase()}</div>
-                    </div>
-                    <button onclick="deleteHistoryItem(${item.id})" class="text-slate-400 hover:text-rose-500 transition">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                `;
-                container.appendChild(el);
+        function copySummary() {
+            if (!isConsented) return;
+            const text = generateSummaryText();
+            navigator.clipboard.writeText(text).then(() => {
+                showToast("Copied to clipboard!");
             });
         }
 
-        function deleteHistoryItem(id) {
-            let history = getHistory().filter(i => i.id !== id);
+        function savePaymentInfo() {
+            const val = document.getElementById('iban-input').value.trim();
+            localStorage.setItem('snapsplit_iban', val);
+            showToast("Payment details saved!");
+        }
+
+        function saveToHistory() {
+            if (!isConsented) return;
+            const grandTotal = document.getElementById('grand-total-val').innerText;
+            const history = JSON.parse(localStorage.getItem('snapsplit_history') || '[]');
+            const entry = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString(),
+                total: grandTotal,
+                mode: currentMode
+            };
+            history.unshift(entry);
             localStorage.setItem('snapsplit_history', JSON.stringify(history));
-            renderHistory();
+            showToast("Saved to history!");
+        }
+
+        function loadHistoryUI() {
+            const list = document.getElementById('history-list');
+            const history = JSON.parse(localStorage.getItem('snapsplit_history') || '[]');
+            const t = i18n[currentLang];
+
+            if (history.length === 0) {
+                list.innerHTML = `<p class="text-xs text-slate-500 text-center py-6">${t.noHistory}</p>`;
+                return;
+            }
+
+            list.innerHTML = history.map(item => `
+                <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-700 flex justify-between items-center text-xs">
+                    <div>
+                        <span class="font-bold text-white text-sm">${item.total}</span>
+                        <span class="text-slate-400 block text-[10px]">${item.date} • ${item.mode.toUpperCase()}</span>
+                    </div>
+                    <i class="fa-solid fa-circle-check text-brand-500"></i>
+                </div>
+            `).join('');
         }
 
         function clearHistory() {
-            const dict = I18N[currentLang] || I18N.en;
             localStorage.removeItem('snapsplit_history');
-            renderHistory();
-            showToast(dict.historyCleared);
+            loadHistoryUI();
+            showToast("History cleared!");
         }
 
-        // 15. TOAST NOTIFICATION SYSTEM
-        function showToast(message, isError = false) {
+        function openModal(id) {
+            if (id === 'history-modal') loadHistoryUI();
+            const modal = document.getElementById(id);
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        function toggleSection(id) {
+            document.getElementById(id).classList.toggle('hidden');
+        }
+
+        function showToast(msg) {
             const toast = document.getElementById('toast');
-            const msgEl = document.getElementById('toast-message');
-            const iconEl = document.getElementById('toast-icon');
-
-            msgEl.textContent = message;
-            if (isError) {
-                iconEl.className = "fas fa-exclamation-circle text-rose-500";
-            } else {
-                iconEl.className = "fas fa-check-circle text-emerald-400 dark:text-emerald-600";
-            }
-
-            toast.classList.remove('-translate-y-20', 'opacity-0');
-            toast.classList.add('translate-y-0', 'opacity-100');
-
+            document.getElementById('toast-msg').innerText = msg;
+            toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-[-20px]');
             setTimeout(() => {
-                toast.classList.remove('translate-y-0', 'opacity-100');
-                toast.classList.add('-translate-y-20', 'opacity-0');
+                toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-[-20px]');
             }, 2500);
         }
-
-        // 16. UTILITY FUNCTIONS
-        function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-        }
-
-        // 17. SERVICE WORKER INLINE REGISTRATION FOR OFFINE & PWA BUILDER
-        function registerServiceWorker() {
-            if ('serviceWorker' in navigator) {
-                const swCode = `
-                    const CACHE_NAME = 'snapsplit-v1';
-                    self.addEventListener('install', (e) => {
-                        e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(['./'])));
-                    });
-                    self.addEventListener('fetch', (e) => {
-                        e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
-                    });
-                `;
-                const blob = new Blob([swCode], { type: 'application/javascript' });
-                const blobUrl = URL.createObjectURL(blob);
-                navigator.serviceWorker.register(blobUrl).catch(() => {});
-            }
-        }
     </script>
-    <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('SW Registered!', reg))
-        .catch(err => console.error('SW Registration Failed!', err));
-    });
-  }
+    <!-- Service Worker Registration Script -->
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('Service Worker registered successfully:', reg.scope))
+                .catch(err => console.error('Service Worker registration failed:', err));
+        });
+    }
 </script>
 </body>
 </html>
