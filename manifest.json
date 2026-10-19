@@ -1,0 +1,28 @@
+{
+  "short_name": "Split&Snap",
+  "name": "Split & Snap - Quick Receipt & Expense Splitter",
+  "description": "Quickly calculate tips, split bills, and generate shareable expense summaries locally on your device.",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2489/2489756.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2489/2489756.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "id": "/split-and-snap/",
+  "start_url": "./index.html",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "./",
+  "lang": "en",
+  "categories": ["utilities", "finance", "productivity"]
+}
